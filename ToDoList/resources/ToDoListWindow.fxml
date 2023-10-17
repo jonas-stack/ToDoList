@@ -23,7 +23,12 @@
       <Button fx:id="btnLeft1" layoutX="185.0" layoutY="303.0" mnemonicParsing="false" onAction="#moveL1" text="&lt;" />
       <Button fx:id="btnRight2" layoutX="391.0" layoutY="257.0" mnemonicParsing="false" onAction="#moveR2" text="&gt;" />
       <Button fx:id="btnLeft2" layoutX="391.0" layoutY="303.0" mnemonicParsing="false" onAction="#moveL2" text="&lt;" />
-      <Button fx:id="btnNewToDo" layoutX="205.0" layoutY="507.0" mnemonicParsing="false" onAction="#createNewTodoItem" text="Create a new to do ">
+      <Button fx:id="btnNewToDo" layoutX="102.0" layoutY="500.0" mnemonicParsing="false" onAction="#createNewTodoItem" text="Create a new to do ">
+         <font>
+            <Font size="19.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnEdit" layoutX="356.0" layoutY="500.0" mnemonicParsing="false" onAction="#editItemInList" text="EditItem">
          <font>
             <Font size="19.0" />
          </font>
