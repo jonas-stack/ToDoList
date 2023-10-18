@@ -5,9 +5,14 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/ToDoList/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/ToDoList/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/out" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
     </content>
     <content url="file://$MODULE_DIR$/out" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="0e68a1c0-7d54-4932-9110-0350c1c48b51" />
   </component>
 </module>

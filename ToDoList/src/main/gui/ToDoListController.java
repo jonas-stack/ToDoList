@@ -2,87 +2,96 @@ package main.gui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
-
-import java.util.Optional;
 
 public class ToDoListController {
     @FXML
-    public Button btnRight1, btnLeft1, btnRight2, btnLeft2;
+    private ListView<String> listToDo;
+    @FXML
+    private ListView<String> listInProgress;
+    @FXML
+    private ListView<String> listDone;
 
-    public ListView<String> listToDo;
-    public ListView<String> listInProgress;
-    public ListView<String> listDone;
-    public Button btnEdit;
-    public Button btnNewToDo;
+    @FXML
+    public void initialize() {
+        setupSelectionListeners();
+    }
+
+    private final TodoService todoService;
+
+    public ToDoListController() {
+        todoService = new TodoService();
+    }
 
     public void createNewTodoItem(ActionEvent actionEvent) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("New Todo Item");
-        dialog.setHeaderText("Add a new Todo item");
-        dialog.setContentText("Enter your todo item:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(item -> listToDo.getItems().add(item));
+        String newItem = todoService.createItem();
+        if (newItem != null && !newItem.trim().isEmpty()) {
+            listToDo.getItems().add(newItem);
+        }
     }
 
     public void editItemInList(ActionEvent actionEvent) {
-        TextInputDialog dialog = new TextInputDialog();
-        String selectedItem = listToDo.getSelectionModel().getSelectedItem();
-        System.out.println(selectedItem);
-        dialog.setTitle("Edit Todo Item");
-        dialog.setHeaderText("Edit the selected Todo item");
-        dialog.setContentText("Edit your todo item:");
-        dialog.getEditor().setText(selectedItem);
-        Optional<String> result = dialog.showAndWait();
-        editBySelectedState(result);
+        ListView<String> activeList = null;
+        String selectedItem;
+
+        if ((selectedItem = listToDo.getSelectionModel().getSelectedItem()) != null) {
+            activeList = listToDo;
+        } else if ((selectedItem = listInProgress.getSelectionModel().getSelectedItem()) != null) {
+            activeList = listInProgress;
+        } else if ((selectedItem = listDone.getSelectionModel().getSelectedItem()) != null) {
+            activeList = listDone;
+        }
+
+        if (selectedItem != null) {
+            String editedItem = todoService.editItem(selectedItem);
+            if (editedItem != null && !editedItem.trim().isEmpty()) {
+                int selectedIndex = activeList.getSelectionModel().getSelectedIndex();
+                activeList.getItems().set(selectedIndex, editedItem);
+            }
+        }
     }
 
-    private void editBySelectedState(Optional<String> result) {
-        System.out.println(result);
-        result.ifPresent(editedItem -> {
-            // Logic to handle the edited item
-            System.out.println("Edited item: " + editedItem);
-            // Update the item in the list
-            int selectedIndex = listToDo.getSelectionModel().getSelectedIndex();
-            if (selectedIndex >= 0) {
-                listToDo.getItems().set(selectedIndex, editedItem);
+    public void moveToProgress(ActionEvent actionEvent) {
+        moveItemHelper(listToDo, listInProgress);
+    }
+
+    public void moveBackToTodo(ActionEvent actionEvent) {
+        moveItemHelper(listInProgress, listToDo);
+    }
+
+    public void moveToDone(ActionEvent actionEvent) {
+        moveItemHelper(listInProgress, listDone);
+    }
+
+    public void moveBackToProgress(ActionEvent actionEvent) {
+        moveItemHelper(listDone, listInProgress);
+    }
+
+    private void moveItemHelper(ListView<String> fromList, ListView<String> toList) {
+        String selectedItem = fromList.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            toList.getItems().add(selectedItem);
+            fromList.getItems().remove(selectedItem);
+        }
+    }
+
+    private void setupSelectionListeners() {
+        addClearSelectionListener(listToDo, listInProgress, listDone);
+        addClearSelectionListener(listInProgress, listToDo, listDone);
+        addClearSelectionListener(listDone, listToDo, listInProgress);
+    }
+
+    private void addClearSelectionListener(ListView<String> selectedList, ListView<String>... otherLists) {
+        selectedList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                clearSelections(otherLists);
             }
         });
     }
 
-
-    public void moveToProgress(ActionEvent actionEvent) {
-        String selectedItem = listToDo.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            listInProgress.getItems().add(selectedItem);
-            listToDo.getItems().remove(selectedItem);
-        }
-    }
-
-    public void moveBackToTodo(ActionEvent actionEvent) {
-        String selectedItem = listInProgress.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            listToDo.getItems().add(selectedItem);
-            listInProgress.getItems().remove(selectedItem);
-        }
-    }
-
-    public void moveToDone(ActionEvent actionEvent) {
-        String selectedItem = listInProgress.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            listDone.getItems().add(selectedItem);
-            listInProgress.getItems().remove(selectedItem);
-        }
-    }
-
-    public void moveBackToProgress(ActionEvent actionEvent) {
-        String selectedItem = listDone.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            listInProgress.getItems().add(selectedItem);
-            listDone.getItems().remove(selectedItem);
+    private void clearSelections(ListView<String>... lists) {
+        for (ListView<String> list : lists) {
+            list.getSelectionModel().clearSelection();
         }
     }
 }
