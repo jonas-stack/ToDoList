@@ -28,36 +28,33 @@ public class ToDoListController {
         result.ifPresent(item -> listToDo.getItems().add(item));
     }
 
-    public void editItemInList(ActionEvent actionEvent) //cant get this method to work.
-    {
-        ListView<String> selectedList = getSelectedList();
-        if (selectedList != null) {
-            int selectedIndex = selectedList.getSelectionModel().getSelectedIndex();
-            if (selectedIndex != -1) {
-                TextInputDialog dialog = new TextInputDialog(selectedList.getItems().get(selectedIndex));
-                dialog.setTitle("Edit Todo Item");
-                dialog.setHeaderText("Edit the selected Todo item");
-                dialog.setContentText("Edit your todo item:");
+    public void editItemInList(ActionEvent actionEvent) {
+        TextInputDialog dialog = new TextInputDialog();
+        String selectedItem = listToDo.getSelectionModel().getSelectedItem();
+        System.out.println(selectedItem);
+        dialog.setTitle("Edit Todo Item");
+        dialog.setHeaderText("Edit the selected Todo item");
+        dialog.setContentText("Edit your todo item:");
+        dialog.getEditor().setText(selectedItem);
+        Optional<String> result = dialog.showAndWait();
+        editBySelectedState(result);
+    }
 
-                Optional<String> result = dialog.showAndWait();
-                result.ifPresent(newItem -> selectedList.getItems().set(selectedIndex, newItem));
+    private void editBySelectedState(Optional<String> result) {
+        System.out.println(result);
+        result.ifPresent(editedItem -> {
+            // Logic to handle the edited item
+            System.out.println("Edited item: " + editedItem);
+            // Update the item in the list
+            int selectedIndex = listToDo.getSelectionModel().getSelectedIndex();
+            if (selectedIndex >= 0) {
+                listToDo.getItems().set(selectedIndex, editedItem);
             }
-        }
+        });
     }
 
-    private ListView<String> getSelectedList() //helper method belonging to "editItemInList"
-    {
-        if (listToDo.isFocused()) {
-            return listToDo;
-        } else if (listInProgress.isFocused()) {
-            return listInProgress;
-        } else if (listDone.isFocused()) {
-            return listDone;
-        }
-        return null;
-    }
 
-    public void moveR1(ActionEvent actionEvent) {
+    public void moveToProgress(ActionEvent actionEvent) {
         String selectedItem = listToDo.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             listInProgress.getItems().add(selectedItem);
@@ -65,7 +62,7 @@ public class ToDoListController {
         }
     }
 
-    public void moveL1(ActionEvent actionEvent) {
+    public void moveBackToTodo(ActionEvent actionEvent) {
         String selectedItem = listInProgress.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             listToDo.getItems().add(selectedItem);
@@ -73,7 +70,7 @@ public class ToDoListController {
         }
     }
 
-    public void moveR2(ActionEvent actionEvent) {
+    public void moveToDone(ActionEvent actionEvent) {
         String selectedItem = listInProgress.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             listDone.getItems().add(selectedItem);
@@ -81,7 +78,7 @@ public class ToDoListController {
         }
     }
 
-    public void moveL2(ActionEvent actionEvent) {
+    public void moveBackToProgress(ActionEvent actionEvent) {
         String selectedItem = listDone.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             listInProgress.getItems().add(selectedItem);
