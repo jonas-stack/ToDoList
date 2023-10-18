@@ -5,50 +5,76 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseButton;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class ToDoListController {
     @FXML
-    public Button btnRight1, btnLeft1, btnRight2, btnLeft2;
+    public Button btnRight1;
+    @FXML
+    public Button btnLeft1;
+    @FXML
+    public Button btnRight2;
+    @FXML
+    public Button btnLeft2;
+    @FXML
+    public Button btnNewToDo;
 
     public ListView<String> listToDo;
     public ListView<String> listInProgress;
     public ListView<String> listDone;
-    public Button btnEdit;
-    public Button btnNewToDo;
 
     public void createNewTodoItem(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("New Todo Item");
         dialog.setHeaderText("Add a new Todo item");
         dialog.setContentText("Enter your todo item:");
-
+        dialog.getDialogPane().getStylesheets().add(
+                Objects.requireNonNull(
+                        getClass().getResource("/main/css/AddAndEdit.css")
+                ).toExternalForm()
+        );
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(item -> listToDo.getItems().add(item));
+
+        setListDoubleClickHandler(listToDo);
+        setListDoubleClickHandler(listInProgress);
+        setListDoubleClickHandler(listDone);
     }
 
-    public void editItemInList(ActionEvent actionEvent) {
-        TextInputDialog dialog = new TextInputDialog();
-        String selectedItem = listToDo.getSelectionModel().getSelectedItem();
-        System.out.println(selectedItem);
-        dialog.setTitle("Edit Todo Item");
-        dialog.setHeaderText("Edit the selected Todo item");
-        dialog.setContentText("Edit your todo item:");
-        dialog.getEditor().setText(selectedItem);
-        Optional<String> result = dialog.showAndWait();
-        editBySelectedState(result);
+    private void setListDoubleClickHandler(ListView<String> listView) {
+        listView.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
+                editItemInList(listView);
+            }
+        });
     }
 
-    private void editBySelectedState(Optional<String> result) {
-        System.out.println(result);
+    @FXML
+    public void editItemInList(ListView<String> listView) {
+        String selectedItem = listView.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            TextInputDialog dialog = new TextInputDialog(selectedItem);
+            dialog.setTitle("Edit Todo Item");
+            dialog.setHeaderText("Edit the selected Todo item");
+            dialog.setContentText("Edit your todo item:");
+            dialog.getDialogPane().getStylesheets().add(
+                    Objects.requireNonNull(
+                            getClass().getResource("/main/css/AddAndEdit.css")
+                    ).toExternalForm()
+            );
+            Optional<String> result = dialog.showAndWait();
+            editBySelectedState(result, listView);
+        }
+    }
+
+    private void editBySelectedState(Optional<String> result, ListView<String> listView) {
         result.ifPresent(editedItem -> {
-            // Logic to handle the edited item
-            System.out.println("Edited item: " + editedItem);
-            // Update the item in the list
-            int selectedIndex = listToDo.getSelectionModel().getSelectedIndex();
+            int selectedIndex = listView.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
-                listToDo.getItems().set(selectedIndex, editedItem);
+                listView.getItems().set(selectedIndex, editedItem);
             }
         });
     }
