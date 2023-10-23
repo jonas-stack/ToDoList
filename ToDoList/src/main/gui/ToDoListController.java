@@ -67,9 +67,14 @@ public class ToDoListController {
                     ).toExternalForm()
             );
             Optional<String> result = dialog.showAndWait();
-            editBySelectedState(result, listView);
+            if (result.isPresent() && !result.get().isBlank()) { // Check if the result is not blank
+                editBySelectedState(result, listView);
+            } else {
+                listView.getItems().remove(selectedItem); // Remove the item if the result is blank
+            }
         }
     }
+
 
     private void editBySelectedState(Optional<String> result, ListView<String> listView) {
         result.ifPresent(editedItem -> {
