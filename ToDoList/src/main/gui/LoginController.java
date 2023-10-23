@@ -11,20 +11,26 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-
 public class LoginController {
 
+    // TextField for login label
     public TextField lblLogin;
+    // Button for proceeding to the next window
     public Button btnProceed;
 
+    // Event handler for the proceed button
     public void Proceed(ActionEvent actionEvent) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ToDoListWindow.fxml"));// Create an FXMLLoader
-        Parent root = loader.load();// Load the FXML file and obtain the root node
+        // Creates an FXMLLoader to load the ToDoListWindow
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ToDoListWindow.fxml"));
+        // Load the FXML file and get the root node
+        Parent root = loader.load();
 
+        // Create a new stage for the ToDoListWindow
         Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.setTitle("ToDoList");
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.show();
+        stage.setScene(new Scene(root)); // Set the scene to the loaded root
+        stage.setTitle("ToDoList"); // Set the title of the stage
+        stage.initModality(Modality.APPLICATION_MODAL); // Set the modality of the stage to application modal
+        stage.show(); // Display the stage
     }
 }
+
