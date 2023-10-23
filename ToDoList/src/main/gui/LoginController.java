@@ -31,6 +31,7 @@ public class LoginController {
         stage.setTitle("ToDoList"); // Set the title of the stage
         stage.initModality(Modality.APPLICATION_MODAL); // Set the modality of the stage to application modal
         stage.show(); // Display the stage
+
     }
 }
 

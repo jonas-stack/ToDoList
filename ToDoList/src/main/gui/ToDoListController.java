@@ -25,68 +25,72 @@ public class ToDoListController {
 
     // Event handler for creating a new todo item
     public void createNewTodoItem(ActionEvent actionEvent) {
-        // Create and configure a TextInputDialog for adding a new todo item
+        // Create a new TextInputDialog
         TextInputDialog dialog = new TextInputDialog();
-        configureTextInputDialog(dialog, "New Todo Item", "Add a new Todo item", "Enter your todo item:");
-        // Show the dialog and handle the result
+        // Configure the TextInputDialog using the DialogBoxUtils class
+        DialogBoxUtils.configureTextInputDialog(dialog, "New Todo Item", "Add a new Todo item", "Enter your todo item:");
+        // Show the dialog and wait for the user's input
         Optional<String> result = dialog.showAndWait();
-        result.ifPresent(item -> listToDo.getItems().add(item)); // Add the item to the todo list
+        // If the result is present (i.e., the user entered something)...
+        result.ifPresent(item -> listToDo.getItems().add(item));
+
+        // Set double-click handler for the lists
         setListDoubleClickHandler(listToDo);
         setListDoubleClickHandler(listInProgress);
         setListDoubleClickHandler(listDone);
     }
 
-    // Configures the TextInputDialog with the provided parameters
-    private void configureTextInputDialog(TextInputDialog dialog, String title, String headerText, String contentText) {
-        dialog.setTitle(title);
-        dialog.setHeaderText(headerText);
-        dialog.setContentText(contentText);
+
+    // Event handler for editing an item in the list
+    public void editItemInList(ListView<String> listView) {
+        // Get the selected item from the list view
+        String selectedItem = listView.getSelectionModel().getSelectedItem();
+        // If an item is selected...
+        if (selectedItem != null) {
+            // Create a TextInputDialog with the selected item as the default value
+            TextInputDialog dialog = new TextInputDialog(selectedItem);
+            // Configure the TextInputDialog using the DialogBoxUtils class
+            DialogBoxUtils.configureTextInputDialog(dialog, "Edit Todo Item", "Edit the selected Todo item", "Edit your todo item:");
+            // Show the dialog and wait for the user's input
+            Optional<String> result = dialog.showAndWait();
+
+            // If the result is present and not blank...
+            if (result.isPresent() && !result.get().isBlank()) {
+                // Call the editBySelectedState method to edit the item in the list view
+                editBySelectedState(result, listView);
+            } else { // If the result is blank or not present...
+                // Remove the selected item from the list view
+                listView.getItems().remove(selectedItem);
+            }
+        }
     }
 
-    // Set double click handler for a list
+
+    // This method sets the double-click handler for the provided ListView of strings.
     private void setListDoubleClickHandler(ListView<String> listView) {
         listView.setOnMouseClicked(mouseEvent -> {
+            // Check if the mouse event is a double-click by verifying the button and click count.
             if (mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
+                // If it's a double-click, call the editItemInList method, passing the ListView.
                 editItemInList(listView);
             }
         });
     }
 
-    // Event handler for editing an item in the list
-    public void editItemInList(ListView<String> listView) {
-        // Get the selected item and open a TextInputDialog for editing
-        String selectedItem = listView.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            TextInputDialog dialog = new TextInputDialog(selectedItem);
-            configureTextInputDialog(dialog, "Edit Todo Item", "Edit the selected Todo item", "Edit your todo item:");
-            // Show the dialog and handle the result
-            Optional<String> result = dialog.showAndWait();
-            if (result.isPresent() && !result.get().isBlank()) {
-                editBySelectedState(result, listView); // Edit the item based on the result
-            } else {
-                listView.getItems().remove(selectedItem); // Remove the item if the result is blank
-            }
-        }
-    }
 
-    // Edits the item in the list based on the selected state
+    // This method is responsible for updating the selected item in the list based on the provided result.
     private void editBySelectedState(Optional<String> result, ListView<String> listView) {
+        // If the result is present, update the item in the list.
         result.ifPresent(editedItem -> {
+            // Get the selected index.
             int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+            // If a valid index is obtained, update the item in the list.
             if (selectedIndex >= 0) {
-                listView.getItems().set(selectedIndex, editedItem); // Update the item in the list
+                listView.getItems().set(selectedIndex, editedItem);
             }
         });
     }
 
-    // Moves an item from the source list to the destination list
-    public void moveItem(ListView<String> sourceList, ListView<String> destinationList) {
-        String selectedItem = sourceList.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            destinationList.getItems().add(selectedItem); // Add the item to the destination list
-            sourceList.getItems().remove(selectedItem); // Remove the item from the source list
-        }
-    }
 
     // Event handlers for moving items between lists
     public void moveToProgress(ActionEvent actionEvent) {
@@ -104,6 +108,23 @@ public class ToDoListController {
     public void moveBackToProgress(ActionEvent actionEvent) {
         moveItem(listDone, listInProgress);
     }
+
+    public void moveItem(ListView<String> sourceList, ListView<String> destinationList) {
+        // Get the selected item from the source list
+        String selectedItem = sourceList.getSelectionModel().getSelectedItem();
+
+        // Check if an item is selected
+        if (selectedItem != null) {
+            // Add the selected item to the destination list
+            destinationList.getItems().add(selectedItem);
+
+            // Remove the selected item from the source list
+            sourceList.getItems().remove(selectedItem);
+        }
+    }
+
 }
+
+
 
 

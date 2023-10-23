@@ -6,21 +6,21 @@
 
 
 .dialog-pane {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #db2f2f;
 }
 
 .dialog-pane .header-panel {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #4cbb08;
 }
 
 .dialog-pane .content {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #ee6f05;
 }
 
 .dialog-pane .text-input {
-    -fx-prompt-text-fill: #ffffff;
+    -fx-prompt-text-fill: #1634c9;
 }
 
 .dialog-pane .text-input .prompt-text {
-    -fx-fill: #ffffff;
+    -fx-fill: #c108d5;
 }
